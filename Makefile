@@ -1,20 +1,14 @@
-CXX = g++
-CC = gcc
+CC = g++
 CFLAGS = -Wall
-TARGETS = server client
-SRC_FILES = server.cpp client.cpp
-OBJ_FILES = $(SRC_FILES:.cpp=.o)
 
-all: $(TARGETS)
+all: server client
 
-server: server.o
-	$(CXX) $^ -o $@
-
-client: client.o
-	$(CXX) $^ -o $@
-
-%.o: %.cpp
-	$(CXX) $(CFLAGS) -c $<
+server: server.cpp
+	$(CC) $(CFLAGS) -o server server.cpp -pthread
+client: client.cpp
+	$(CC) $(CFLAGS) -o client client.cpp
 
 clean:
-	rm -f $(OBJ_FILES) $(TARGETS)
+	rm -f server client
+
+.PHONY: all clean
