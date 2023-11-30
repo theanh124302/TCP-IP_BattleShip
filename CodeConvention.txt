@@ -2,3 +2,6 @@ Biến: viết thường chữ cái đầu, chữ cái sau viết hoa
 ví dụ: result, resultString
 Hàm: viết hoa tất cả chữ cái đầu, là động từ, mỗi hàm cần có para mô tả input, output
 Ví dụ: SignIn, SignUp
+
+Một số lưu ý:
+Cái khai báo struct, enum, biến toàn cục nên khai báo bên file config.h
