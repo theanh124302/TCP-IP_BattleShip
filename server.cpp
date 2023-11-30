@@ -2,85 +2,75 @@
 
 int request = 0;
 
-void insertNode(struct Node **head, const char *user, const char *pass, int stat, int sign, int incorrect)
+// Init file to account list
+void ReadFile()
 {
-    struct Node *newNode = (struct Node *)malloc(sizeof(struct Node));
-    strcpy(newNode->username, user);
-    strcpy(newNode->password, pass);
-    newNode->status = stat;
-    newNode->sign = sign;
-    newNode->incorrect = incorrect;
-    newNode->next = *head;
-    *head = newNode;
-}
-int SignIn(const char *user, const char *pass)
-{
-    struct Node *head = NULL;
-    char username[BUFF_SIZE];
-    char password[BUFF_SIZE];
-    char fileName[] = "account.txt";
-    FILE *file = fopen(fileName, "r");
-    int stat, sign, incorrect;
-    while (fscanf(file, "%s %s %d %d %d", username, password, &stat, &sign, &incorrect) != EOF)
+    std::string username;
+    // Load file
+    std::ifstream file("account.txt");
+    if (!file.is_open())
     {
-        insertNode(&head, username, password, stat, sign, incorrect);
+        printf("Error open file RM.txt\n");
+        return;
+    }
+    // Read the file using fscanf
+    while (file >> username)
+    {
+        Account acc = Account();
+        acc.username = username;
+        file >> acc.password >> acc.status >> acc.sign >> acc.incorrect;
+        accountsList.push_back(acc);
+    }
+    file.close();
+}
+
+// Rewrite to file
+void WriteFile()
+{
+    FILE *file = fopen("account.txt", "w");
+    for (auto it : accountsList)
+    {
+        fprintf(file, "%s %s %d %d %d\n", it.username.c_str(), it.password.c_str(), it.status, it.sign, it.incorrect);
     }
     fclose(file);
-    struct Node *current = head;
-    while (current != NULL)
+}
+
+int SignIn(std::string user, std::string pass)
+{
+    // Check acc
+    for (auto &account : accountsList)
     {
-        if (strcmp(current->username, user) == 0)
+        if (account.username == user)
         {
-            if (current->status == 0)
+            if (account.status == 0)
             {
                 // Tai khoan bi block
                 return 4;
             }
             while (1)
             {
-                if (strcmp(current->password, pass) != 0)
+                if (account.password != pass)
                 {
-                    current->incorrect++;
-                    if (current->incorrect >= 3)
+                    account.incorrect++;
+                    if (account.incorrect >= 3)
                     {
-                        current->status = 0;
-                        FILE *file = fopen(fileName, "w");
-                        current = head;
-                        while (current != NULL)
-                        {
-                            fprintf(file, "%s %s %d %d %d\n", current->username, current->password, current->status, current->sign, current->incorrect);
-                            current = current->next;
-                        }
-                        fclose(file);
+                        account.status = 0;
+                        WriteFile();
                         // Tai khoan da bi khoa do nhap sai qua 3 lan
                         return 2;
                     }
                     else
                     {
-                        FILE *file = fopen(fileName, "w");
-                        current = head;
-                        while (current != NULL)
-                        {
-                            fprintf(file, "%s %s %d %d %d\n", current->username, current->password, current->status, current->sign, current->incorrect);
-                            current = current->next;
-                        }
-                        fclose(file);
+                        WriteFile();
                         // Sai pass
                         return 3;
                     }
                 }
-                else if (current->sign == 0)
+                else if (account.sign == 0)
                 {
-                    current->incorrect = 0;
-                    current->sign = 1;
-                    FILE *file = fopen(fileName, "w");
-                    current = head;
-                    while (current != NULL)
-                    {
-                        fprintf(file, "%s %s %d %d %d\n", current->username, current->password, current->status, current->sign, current->incorrect);
-                        current = current->next;
-                    }
-                    fclose(file);
+                    account.incorrect = 0;
+                    account.sign = 1;
+                    WriteFile();
                     // Login thanh cong
                     return 1;
                 }
@@ -91,110 +81,57 @@ int SignIn(const char *user, const char *pass)
                 }
             }
         }
-        current = current->next;
     }
+
     // Khong tim duoc user
     return 0;
 }
-int SignOut(const char *user)
+
+int SignOut(std::string user)
 {
-    struct Node *head = NULL;
-    char username[BUFF_SIZE];
-    char password[BUFF_SIZE];
-    char fileName[] = "account.txt";
-    FILE *file = fopen(fileName, "r");
-    int stat, sign, incorrect;
-    while (fscanf(file, "%s %s %d %d %d", username, password, &stat, &sign, &incorrect) != EOF)
+    for (auto &account : accountsList)
     {
-        insertNode(&head, username, password, stat, sign, incorrect);
-    }
-    struct Node *current = head;
-    fclose(file);
-    file = fopen(fileName, "w");
-    while (current != NULL)
-    {
-        if (strcmp(current->username, user) == 0)
+        if (account.username == user)
         {
-            current->sign = 0;
+            account.sign = 0;
+            WriteFile();
+            break;
         }
-        current = current->next;
     }
-    current = head;
-    while (current != NULL)
-    {
-        fprintf(file, "%s %s %d %d %d\n", current->username, current->password, current->status, current->sign, current->incorrect);
-        current = current->next;
-    }
-    fclose(file);
     return 0;
 }
 
-int SignUp(const char *user, const char *pass)
+int SignUp(std::string user, std::string pass)
 {
-    struct Node *head = NULL;
-    char username[BUFF_SIZE];
-    char password[BUFF_SIZE];
-    char fileName[] = "account.txt";
-    FILE *file = fopen(fileName, "r");
-    int stat, sign, incorrect;
-    while (fscanf(file, "%s %s %d %d %d", username, password, &stat, &sign, &incorrect) != EOF)
+    for (auto &account : accountsList)
     {
-        insertNode(&head, username, password, stat, sign, incorrect);
-    }
-    fclose(file);
-    struct Node *current = head;
-    while (current != NULL)
-    {
-        if (strcmp(current->username, user) == 0)
+        if (account.username == user)
         {
             // User da ton tai
             return 1;
         }
-        current = current->next;
     }
-    insertNode(&head, user, pass, 1, 0, 0);
-    file = fopen(fileName, "w");
-    current = head;
-    while (current != NULL)
-    {
-        fprintf(file, "%s %s %d %d %d\n", current->username, current->password, current->status, current->sign, current->incorrect);
-        current = current->next;
-    }
-    fclose(file);
+
+    Account account = Account(user, pass, 1, 0, 0);
+    accountsList.push_back(account);
+    WriteFile();
     // Dang ky thanh cong
     return 0;
 }
 
-int ChangePass(const char *user, const char *newpass)
+int ChangePass(std::string user, std::string newpass)
 {
-    struct Node *head = NULL;
-    char username[BUFF_SIZE];
-    char password[BUFF_SIZE];
-    char fileName[] = "account.txt";
-    FILE *file = fopen(fileName, "r");
-    int stat, sign, incorrect;
-    while (fscanf(file, "%s %s %d %d %d", username, password, &stat, &sign, &incorrect) != EOF)
+    for (auto &account : accountsList)
     {
-        insertNode(&head, username, password, stat, sign, incorrect);
-    }
-    struct Node *current = head;
-    fclose(file);
-    file = fopen(fileName, "w");
-    while (current != NULL)
-    {
-        if (strcmp(current->username, user) == 0)
+        if (account.username == user)
         {
-            strcpy(current->password, newpass);
+            account.password = newpass;
+            std::cout << account.password;
+            break;
         }
-        current = current->next;
     }
-    current = head;
-    while (current != NULL)
-    {
-        fprintf(file, "%s %s %d %d %d\n", current->username, current->password, current->status, current->sign, current->incorrect);
-        current = current->next;
-    }
-    fclose(file);
+
+    WriteFile();
     return 0;
 }
 
@@ -232,7 +169,7 @@ void *handle_client(void *socket_desc)
             {
             case TypeMassage::LOGIN:
                 /* code */
-                result = SignIn(tokens.at(1).c_str(), tokens.at(2).c_str());
+                result = SignIn(tokens.at(1), tokens.at(2));
                 if (result == 1)
                 {
                     user = tokens[1];
@@ -243,7 +180,7 @@ void *handle_client(void *socket_desc)
                 break;
             case TypeMassage::LOGOUT:
                 /* code */
-                SignOut(tokens.at(1).c_str());
+                SignOut(tokens.at(1));
                 send(client_socket, "20", BUFF_SIZE, 0);
                 break;
             case TypeMassage::SIGNUP:
@@ -254,7 +191,7 @@ void *handle_client(void *socket_desc)
                 }
                 else
                 {
-                    result = SignUp(tokens.at(1).c_str(), tokens.at(2).c_str());
+                    result = SignUp(tokens.at(1), tokens.at(2));
                     sprintf(resultString, "3%d", result);
                     send(client_socket, resultString, BUFF_SIZE, 0);
                 }
@@ -267,7 +204,7 @@ void *handle_client(void *socket_desc)
                 }
                 else
                 {
-                    result = ChangePass(tokens.at(1).c_str(), tokens.at(2).c_str());
+                    result = ChangePass(tokens.at(1), tokens.at(3));
                     sprintf(resultString, "4%d", result);
                     send(client_socket, resultString, BUFF_SIZE, 0);
                 }
@@ -315,8 +252,19 @@ void *handle_client(void *socket_desc)
     return NULL;
 }
 
+// Set defaul sigin of account is 0
+void SetDefaulSignIn()
+{
+    for (auto &account : accountsList)
+    {
+        account.sign = 0;
+    }
+    WriteFile();
+}
+
 int main()
 {
+    ReadFile();
     int server_fd, new_socket, c;
     struct sockaddr_in server, client;
 
@@ -362,6 +310,7 @@ int main()
         if (pthread_create(&sniffer_thread, NULL, handle_client, (void *)new_sock) < 0)
         {
             perror("could not create thread");
+            SetDefaulSignIn();
             return 1;
         }
 
@@ -369,6 +318,8 @@ int main()
         pthread_detach(sniffer_thread);
         puts("Handler assigned");
     }
+
+    SetDefaulSignIn();
 
     if (new_socket < 0)
     {

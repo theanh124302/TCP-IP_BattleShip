@@ -16,6 +16,7 @@
 #include <iostream>
 #include <sstream>
 #include <cstring>
+#include <fstream>
 
 enum TypeMassage
 {
@@ -31,15 +32,29 @@ enum TypeMassage
     REPLAY
 };
 
-struct Node
+struct Account
 {
-    char username[BUFF_SIZE];
-    char password[BUFF_SIZE];
+    std::string username;
+    std::string password;
     int status;
     int sign;
     int incorrect;
-    struct Node *next;
+
+    Account (std::string user, std::string pass, int sta, int si, int incor)
+    {
+        username = user;
+        password = pass;
+        status = sta;
+        sign = si;
+        incorrect = incor;
+    }
+
+    Account(){};
 };
+
+// Khai báo các biến toàn cục ở đây
+std::vector<Account> accountsList;
+
 
 #endif // CONFIG_H
 
