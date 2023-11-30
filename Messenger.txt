@@ -1,0 +1,21 @@
+Mã trả về : Ý nghĩa
+
+1.Login : 1user+pass
+10: Khong tim duoc user
+11: Login thanh cong
+12: Tai khoan bi khoa do sai qua 3 lan
+13: Sai pass (3 lan lien tuc ban se bi khoa)
+14: Tai khoan da bi khoa
+15: Tai khoan da duoc dang nhap tren thiet bi khac
+
+2.Logout : 2user
+20: Dang xuat
+
+3.SignUp : 3user+pass+cfpass
+30: Dang ky thanh cong
+31: User da ton tai
+32: Cfpass khong hop le
+
+4.ChangePass : 4user+pass+newpass
+40: Doi pass thanh cong
+41: Mat khau moi trung mat khau cu
