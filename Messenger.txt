@@ -19,3 +19,4 @@ Mã trả về : Ý nghĩa
 4.ChangePass : 4user+pass+newpass
 40: Doi pass thanh cong
 41: Mat khau moi trung mat khau cu
+42: Pass cũ sai

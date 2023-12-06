@@ -119,12 +119,17 @@ int SignUp(std::string user, std::string pass)
     return 0;
 }
 
-int ChangePass(std::string user, std::string newpass)
+int ChangePass(std::string user, std::string oldpass, std::string newpass)
 {
     for (auto &account : accountsList)
     {
         if (account.username == user)
         {
+            if (account.password != oldpass)
+            {
+                return 2;
+            }
+
             account.password = newpass;
             std::cout << account.password;
             break;
@@ -163,7 +168,7 @@ void *handle_client(void *socket_desc)
             {
                 tokens.push_back(token);
             }
-
+            
             opt = std::stoi(tokens.at(0));
             switch (opt)
             {
@@ -203,8 +208,8 @@ void *handle_client(void *socket_desc)
                     send(client_socket, "41", BUFF_SIZE, 0);
                 }
                 else
-                {
-                    result = ChangePass(tokens.at(1), tokens.at(3));
+                {        
+                    result = ChangePass(tokens.at(1), tokens.at(2), tokens.at(3));
                     sprintf(resultString, "4%d", result);
                     send(client_socket, resultString, BUFF_SIZE, 0);
                 }

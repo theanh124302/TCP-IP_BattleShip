@@ -1,7 +1,9 @@
-e e 1 0 0
-a d 1 0 0
-b b 1 0 0
+e a 1 0 0
+a d 0 0 3
+b b 0 1 3
 c c 1 0 0
 d d 1 0 0
 theanh team1 1 0 0
 hello hello 1 1 0
+ggg ggg 1 1 0
+hellobro a 1 0 0
