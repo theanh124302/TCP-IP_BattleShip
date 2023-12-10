@@ -1,6 +1,7 @@
 #include "config.h"
 
 int request = 0;
+int client_sockets[MAX_CLIENTS];
 
 // Init file to account list
 void ReadFile()
@@ -18,7 +19,7 @@ void ReadFile()
     {
         Account acc = Account();
         acc.username = username;
-        file >> acc.password >> acc.status >> acc.sign >> acc.incorrect;
+        file >> acc.password >> acc.position >> acc.accountId >> acc.opponent >> acc.status >> acc.sign >> acc.incorrect >> acc.findStatus >> acc.boardId;
         accountsList.push_back(acc);
     }
     file.close();
@@ -30,10 +31,44 @@ void WriteFile()
     FILE *file = fopen("account.txt", "w");
     for (auto it : accountsList)
     {
-        fprintf(file, "%s %s %d %d %d\n", it.username.c_str(), it.password.c_str(), it.status, it.sign, it.incorrect);
+        fprintf(file, "%s %s %s %d %d %d %d %d %d %d\n", it.username.c_str(), it.password.c_str(), it.position.c_str(),it.accountId, it.opponent, it.status, it.sign, it.incorrect, it.findStatus, it.boardId);
     }
     fclose(file);
 }
+
+
+
+void ReadBoardFile()
+{
+    int boardID;
+    // Load file
+    std::ifstream file("board.txt");
+    if (!file.is_open())
+    {
+        printf("Error open file RM.txt\n");
+        return;
+    }
+    // Read the file using fscanf
+    while (file >> boardID)
+    {
+        Board board = Board();
+        board.id = boardID;
+        file >> board.p1ID >> board.p2ID >> board.p1 >> board.p2;
+        boardList.push_back(board);
+    }
+    file.close();
+}
+
+void WriteBoardFile()
+{
+    FILE *file = fopen("board.txt", "w");
+    for (auto it : boardList)
+    {
+        fprintf(file, "%d %d %d %s %s\n", it.id, it.p1ID, it.p2ID, it.p1.c_str(), it.p2.c_str());
+    }
+    fclose(file);
+}
+
 
 int SignIn(std::string user, std::string pass)
 {
@@ -70,6 +105,7 @@ int SignIn(std::string user, std::string pass)
                 {
                     account.incorrect = 0;
                     account.sign = 1;
+                    account.opponent = 0;
                     WriteFile();
                     // Login thanh cong
                     return 1;
@@ -94,6 +130,7 @@ int SignOut(std::string user)
         if (account.username == user)
         {
             account.sign = 0;
+            account.opponent = 0;
             WriteFile();
             break;
         }
@@ -111,8 +148,8 @@ int SignUp(std::string user, std::string pass)
             return 1;
         }
     }
-
-    Account account = Account(user, pass, 1, 0, 0);
+    int id = accountsList.size();
+    Account account = Account(user, pass, NULL, id, 0, 1, 0, 0, 0, 0);
     accountsList.push_back(account);
     WriteFile();
     // Dang ky thanh cong
@@ -135,10 +172,158 @@ int ChangePass(std::string user, std::string oldpass, std::string newpass)
             break;
         }
     }
-
     WriteFile();
     return 0;
 }
+
+
+int FindMatch(std::string acc_Id){
+    int accId = std::stoi(acc_Id);
+    int oppId;
+    int check = 0;
+    for (auto &account : accountsList)
+    {
+        if (account.accountId != accId && account.findStatus == 1)
+        {
+            account.opponent = accId;
+            account.findStatus = 2;
+            oppId = account.accountId;
+            check = 1;
+            break;
+        }
+    }
+    if(check == 1){
+        for (auto &account : accountsList)
+        {
+            if (account.accountId == accId)
+            {
+                account.opponent = oppId;
+                account.findStatus = 2; 
+                break;
+            }
+        }
+        WriteFile();
+        return oppId;
+    }else{
+        for (auto &account : accountsList)
+        {
+            if (account.accountId == accId)
+            {
+                account.opponent = 0;
+                account.findStatus = 1; 
+                break;
+            }
+        }
+        WriteFile();
+        return 0;
+    }
+}
+
+
+
+
+int ExitMatch(std::string acc_Id){
+    int accId = std::stoi(acc_Id);
+    int oppId;
+    for (auto &account : accountsList)
+    {
+        if (account.accountId == accId){
+            oppId = account.opponent;
+            account.opponent = 0;
+            account.findStatus = 0;
+            break;
+        }
+    }
+    if(oppId!=0){
+        for (auto &account : accountsList)
+        {
+            if (account.accountId == oppId)
+            {
+                account.opponent = 0;
+                account.findStatus = 0;
+                break;
+            }
+        }
+    }
+    WriteFile();
+    return 0;
+}
+
+
+int CreateBoard(int p1ID, int p2ID, std::string p1, std::string p2)
+{
+    int newID;
+    int BoardSize = boardList.size();
+    for(int i = 0; i<= BoardSize; i++){
+        int check = 0;
+        for (auto &board : boardList)
+        {
+            if (board.id == i)
+            {
+                check = 1;
+            }
+        }
+        if(check==0){
+            newID = i;
+            break;
+        }
+    }
+    Board board = Board(newID, p1ID, p2ID, p1, p2);
+    boardList.push_back(board);
+    WriteBoardFile();
+    // Dang ky thanh cong
+    return newID;
+}
+
+
+std::string Ready(std::string acc_Id, std::string position){
+    int accId = std::stoi(acc_Id);
+    std::string oppPos;
+    int oppId;
+
+    int new_board_ID = 0;
+    int check = 0;
+    for (auto &account : accountsList)
+    {
+        if (account.accountId == accId){
+            oppId = account.opponent;
+            account.findStatus = 3;
+            account.position = position;
+            break;
+        }
+    }
+    WriteFile();
+    for (auto &account : accountsList)
+    {
+        if (account.accountId == oppId){
+            if(account.findStatus == 3){
+                new_board_ID = CreateBoard(accId, account.accountId, position, account.position);
+                account.boardId = new_board_ID;
+                account.findStatus = 4;
+                oppPos = account.position;
+                check = 1;
+                break;
+            };
+        }
+    }
+    if(check==1){
+        for (auto &account : accountsList)
+        {
+            if (account.accountId == accId){
+                account.boardId = new_board_ID;
+                account.findStatus = 4;
+                break;
+            }
+        }
+        WriteFile();
+        return oppPos;
+    }
+    return "0";
+}
+
+
+
+
 
 void *handle_client(void *socket_desc)
 {
@@ -147,8 +332,8 @@ void *handle_client(void *socket_desc)
     char resultString[BUFF_SIZE];
     int opt, result, sign = 0;
     int read_size;
+    std::string resultS;
     std::string user;
-
     while ((read_size = recv(client_socket, buffer, BUFF_SIZE, 0)) > 0)
     {
         write(1, buffer, read_size);
@@ -216,12 +401,19 @@ void *handle_client(void *socket_desc)
                 break;
             case TypeMassage::FIND_MATCH:
                 /* code */
+                result = FindMatch(tokens.at(1));
+                sprintf(resultString, "5%d", result);
+                send(client_socket, resultString, BUFF_SIZE, 0);
                 break;
             case TypeMassage::EXIT_FIND_MATCH:
-                /* code */
+                result = ExitMatch(tokens.at(1));
+                sprintf(resultString, "6%d", result);
+                send(client_socket, resultString, BUFF_SIZE, 0);
                 break;
             case TypeMassage::READY:
-                /* code */
+                resultS = Ready(tokens.at(1), tokens.at(2));
+                sprintf(resultString, "7%s", resultS.c_str());
+                send(client_socket, resultString, BUFF_SIZE, 0);
                 break;
             case TypeMassage::ATTACK:
                 /* code */
@@ -298,15 +490,22 @@ int main()
         perror("listen failed");
         exit(EXIT_FAILURE);
     }
-
+    for (int i = 0; i < MAX_CLIENTS; ++i) {
+        client_sockets[i] = -1;
+    }
+    int client_index = 0;
     puts("Waiting for incoming connections...");
+
 
     c = sizeof(struct sockaddr_in);
 
     while ((new_socket = accept(server_fd, (struct sockaddr *)&client, (socklen_t *)&c)))
     {
         puts("Connection accepted");
-
+        while (client_sockets[client_index] != -1) {
+            client_index = (client_index + 1) % MAX_CLIENTS;
+        }
+        client_sockets[client_index] = new_socket;
         pthread_t sniffer_thread;
         int new_sock[BUFF_SIZE];
         *new_sock = new_socket;
@@ -314,7 +513,7 @@ int main()
         // Tạo thread để xử lý client mới
         if (pthread_create(&sniffer_thread, NULL, handle_client, (void *)new_sock) < 0)
         {
-            perror("could not create thread");
+            perror("could not create thread!");
             SetDefaulSignIn();
             return 1;
         }
