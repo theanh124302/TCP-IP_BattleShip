@@ -3,11 +3,24 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <pthread.h>
 
 #define PORT 9000
 
+int sock = 0;
+
+// Hàm xử lý nhận dữ liệu từ server
+void *receiveThread(void *arg) {
+    char message[1024] = {0};
+    while (1) {
+        // Nhận dữ liệu từ server
+        memset(message, 0, sizeof(message));
+        recv(sock, message, sizeof(message), 0);
+        printf("Server: %s\n", message);
+    }
+}
+
 int main() {
-    int sock = 0;
     struct sockaddr_in server;
     char message[1024] = {0};
 
@@ -32,17 +45,20 @@ int main() {
         printf("\nConnection Failed \n");
         return -1;
     }
+
+    // Tạo luồng để xử lý việc nhận dữ liệu từ server
+    pthread_t receive_thread;
+    if (pthread_create(&receive_thread, NULL, receiveThread, NULL) < 0) {
+        perror("Thread creation failed");
+        return -1;
+    }
+
     // Gửi và nhận thông điệp với server
     while (1) {
         fgets(message, sizeof(message), stdin);
 
         // Gửi thông điệp
         send(sock, message, strlen(message), 0);
-
-        // Nhận và in ra thông điệp từ server
-        memset(message, 0, sizeof(message));
-        recv(sock, message, sizeof(message), 0);
-        printf("%s\n", message);
     }
 
     return 0;

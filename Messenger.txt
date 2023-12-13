@@ -41,5 +41,12 @@ findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: 
 6.ExitFindMatch : 6+accountId
 60: Thoat tran thanh cong
 
-7.ChangSkin : 
-(cot 7) : id skin
+
+
+7: ready+user+pos
+70 B chua ready , 71 B da ready, vao tran
+
+8: atk+user+index
+80: truot, 81 : trung, 
+90 : thua, 91 : thang 
+

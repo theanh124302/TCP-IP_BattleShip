@@ -37,8 +37,12 @@ struct Account
     std::string username;
     std::string password;
     std::string position;
-    //int socket;
+    std::string history;
+    int socket;
     int accountId;
+    int elo;
+    int gold;
+    int skin;
     int opponent;
     int status;
     int sign;
@@ -46,19 +50,22 @@ struct Account
     int findStatus;
     int boardId;
 
-    Account (std::string user, std::string pass, std::string pos/*, int client_socket*/, int id, int opp, int sta, int si, int incor, int find, int board)
+    Account (std::string user, std::string pass, std::string pos, std::string his, int client_socket, int id, int score, int coin, int skinID ,int opp, int sta, int si, int incor, int find, int board)
     {
         username = user;
         password = pass;
         position = pos;
-        //socket = client_socket;
+        history = his;
+        socket = client_socket;
         accountId = id;
+        elo = score;
+        gold = coin;
+        skin = skinID;
         opponent = opp;
         status = sta;
         sign = si;
         incorrect = incor;
         findStatus = find;
-
         boardId = board;
     }
 
@@ -71,12 +78,16 @@ struct Board
     int p2ID;
     std::string p1;
     std::string p2;
-    Board (int NewID, int p1_ID, int p2_ID, std::string p1pos, std::string p2pos){
+    int socket1;
+    int socket2;
+    Board (int NewID, int p1_ID, int p2_ID, std::string p1pos, std::string p2pos, int socket_1, int socket_2){
         id = NewID;
         p1ID = p1_ID;
         p2ID = p2_ID;
         p1 = p1pos;
         p2 = p2pos;
+        socket1 = socket_1;
+        socket2 = socket_2;
     }
     Board(){};
 };
