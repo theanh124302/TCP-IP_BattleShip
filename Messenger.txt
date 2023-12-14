@@ -31,22 +31,22 @@ cot5: so lan nhap sai mat khau lien tiep
 42: Pass cũ sai
 
 
-5.FindMatch : 5+accountId
+5.FindMatch : 5+user
 50: Dang tim tran
-51+opponentId: Da tim duoc tran
+5+user: Da tim duoc tran
 
 findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: da san sang, 4: da vao tran
 
 
-6.ExitFindMatch : 6+accountId
+6.ExitFindMatch : 6+user
 60: Thoat tran thanh cong
 
 
 
 7: ready+user+pos
-70 B chua ready , 71 B da ready, vao tran
+70 B chua ready , 7+PosB B da ready
 
 8: atk+user+index
 80: truot, 81 : trung, 
-90 : thua, 91 : thang 
+82 : thua, 83 : thang 
 
