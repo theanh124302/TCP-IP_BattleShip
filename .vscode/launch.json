@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "d:/App/VScode/battleShip/TCP-IP_BattleShip",
-      "program": "d:/App/VScode/battleShip/TCP-IP_BattleShip/build/Debug/outDebug",
+      "cwd": "d:/App/VScode/TCP-IP_BattleShip",
+      "program": "d:/App/VScode/TCP-IP_BattleShip/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

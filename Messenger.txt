@@ -1,3 +1,9 @@
+
+ username; password; position; accountId; opponent; status; sign; incorrect; findStatus; boardId
+
+   
+
+
 Mã trả về : Ý nghĩa
 
 1.Login : 1user+pass
@@ -7,6 +13,9 @@ Mã trả về : Ý nghĩa
 13: Sai pass (3 lan lien tuc ban se bi khoa)
 14: Tai khoan da bi khoa
 15: Tai khoan da duoc dang nhap tren thiet bi khac
+cot3: 0: bi khoa, 1: binh thuong
+cot4: 0: chua dnhap, 1: da dang nhap 
+cot5: so lan nhap sai mat khau lien tiep
 
 2.Logout : 2user
 20: Dang xuat
@@ -20,3 +29,24 @@ Mã trả về : Ý nghĩa
 40: Doi pass thanh cong
 41: Mat khau moi trung mat khau cu
 42: Pass cũ sai
+
+
+5.FindMatch : 5+user
+50: Dang tim tran
+5+user: Da tim duoc tran
+
+findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: da san sang, 4: da vao tran
+
+
+6.ExitFindMatch : 6+user
+60: Thoat tran thanh cong
+
+
+
+7: ready+user+pos
+70 B chua ready , 7+PosB B da ready
+
+8: atk+user+index
+80: truot, 81 : trung, 
+82 : thua, 83 : thang 
+
