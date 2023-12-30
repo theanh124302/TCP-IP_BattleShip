@@ -401,7 +401,8 @@ int UpdateBoard(std::string atkPos, int board_ID, int p_ID)
         return 1;
     }else if (check == 0)
     {
-        send(oopSoc, "a0", BUFF_SIZE, 0);
+        sprintf(reS, "8%s", atkPos.c_str());
+        send(oopSoc, reS, BUFF_SIZE, 0);
         return 0;
     }
     return 0;
@@ -440,7 +441,7 @@ std::string Ready(std::string user, std::string position){
                 account.findStatus = 4;
                 oppPos = account.position;
                 sprintf(resPos, "7%s", position.c_str());
-                send(oopSoc, resPos, BUFF_SIZE, 0);
+                send(oopSoc, "71", BUFF_SIZE, 0);
                 check = 1;
                 break;
             };
@@ -456,7 +457,7 @@ std::string Ready(std::string user, std::string position){
             }
         }
         WriteFile();
-        return oppPos;
+        return "1";
     }
     return "0";
 }
@@ -620,6 +621,7 @@ int main()
 {
     ReadFile();
     ReadBoardFile();
+    SetDefaulSignIn();
     int server_fd, new_socket, c;
     struct sockaddr_in server, client;
 
