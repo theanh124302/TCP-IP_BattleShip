@@ -50,3 +50,7 @@ findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: 
 80: truot, 81 : trung, 
 82 : thua, 83 : thang 
 
+11: 11+user (Tao ban)
+aBoardID (vi du : a1, a17,a40)
+
+12: 12+user (Xem cac ban duoc nguoi khac tao de join)
