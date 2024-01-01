@@ -1,5 +1,6 @@
 #include "config.h"
 
+pthread_mutex_t mutex;
 int request = 0;
 int client_sockets[MAX_CLIENTS];
 
@@ -29,12 +30,14 @@ void ReadFile()
 // Rewrite to file
 void WriteFile()
 {
+    pthread_mutex_lock(&mutex);
     FILE *file = fopen("account.txt", "w");
     for (auto it : accountsList)
     {
         fprintf(file, "%s %s %s %s %d %d %d %d %d %d %d %d %d %d %d\n", it.username.c_str(), it.password.c_str(), it.position.c_str(), it.history.c_str(), it.socket, it.accountId, it.elo, it.gold, it.skin, it.opponent, it.status, it.sign, it.incorrect, it.findStatus, it.boardId);
     }
     fclose(file);
+    pthread_mutex_unlock(&mutex);
 }
 
 
@@ -54,7 +57,7 @@ void ReadBoardFile()
     {
         Board board = Board();
         board.id = boardID;
-        file >> board.p1ID >> board.p2ID >> board.p1 >> board.p2 >> board.socket1 >> board.socket2;
+        file >> board.type >> board.p1ID >> board.p2ID >> board.p1 >> board.p2 >> board.socket1 >> board.socket2;
         boardList.push_back(board);
     }
     file.close();
@@ -65,7 +68,7 @@ void WriteBoardFile()
     FILE *file = fopen("board.txt", "w");
     for (auto it : boardList)
     {
-        fprintf(file, "%d %d %d %s %s %d %d\n", it.id, it.p1ID, it.p2ID, it.p1.c_str(), it.p2.c_str(), it.socket1, it.socket2);
+        fprintf(file, "%d %d %d %d %s %s %d %d\n", it.id, it.type, it.p1ID, it.p2ID, it.p1.c_str(), it.p2.c_str(), it.socket1, it.socket2);
     }
     fclose(file);
 }
@@ -317,10 +320,9 @@ int CreateBoard(int p1ID, int p2ID, std::string p1, std::string p2, int socket1,
         }
 
     }
-    Board board = Board(newID, p1ID, p2ID, p1, p2, socket1, socket2);
+    Board board = Board(newID,2, p1ID, p2ID, p1, p2, socket1, socket2);
     boardList.push_back(board);
     WriteBoardFile();
-
     return newID;
 }
 
@@ -401,8 +403,7 @@ int UpdateBoard(std::string atkPos, int board_ID, int p_ID)
         return 1;
     }else if (check == 0)
     {
-        sprintf(reS, "8%s", atkPos.c_str());
-        send(oopSoc, reS, BUFF_SIZE, 0);
+        send(oopSoc, "a0", BUFF_SIZE, 0);
         return 0;
     }
     return 0;
@@ -441,7 +442,7 @@ std::string Ready(std::string user, std::string position){
                 account.findStatus = 4;
                 oppPos = account.position;
                 sprintf(resPos, "7%s", position.c_str());
-                send(oopSoc, "71", BUFF_SIZE, 0);
+                send(oopSoc, resPos, BUFF_SIZE, 0);
                 check = 1;
                 break;
             };
@@ -457,7 +458,7 @@ std::string Ready(std::string user, std::string position){
             }
         }
         WriteFile();
-        return "1";
+        return oppPos;
     }
     return "0";
 }
@@ -481,6 +482,69 @@ int attack(std::string user, std::string atkpos){
 
 
 
+int CreatePublicBoard(std::string user){
+    int newID,p1ID,socket1;
+    for (auto &account : accountsList)
+    {
+        if (account.username == user){
+            p1ID=account.accountId;
+            socket1=account.socket;
+            
+        }
+    }
+    int BoardSize = boardList.size();
+    for(int i = 0; i<= BoardSize; i++){
+        int check = 0;
+        for (auto &board : boardList)
+        {
+            if (board.id == i)
+            {
+                check = 1;
+            }
+        }
+        if(check==0){
+            newID = i;
+            break;
+        }
+
+    }
+    Board board = Board(newID,1, p1ID, 0, "x", "x", socket1, -1);
+    boardList.push_back(board);
+    WriteBoardFile();
+    return newID;
+}
+
+void ViewBoardList(std::string user){
+    char ListID[BUFF_SIZE],BoardID[BUFF_SIZE],ListRes[BUFF_SIZE]="b";
+    int client_socket;
+    for (auto it : boardList){
+        if(it.type==1){
+            snprintf(BoardID,BUFF_SIZE,"%d",it.id);
+            strncat(ListID,BoardID,BUFF_SIZE);
+        }
+    }
+    for (auto &account : accountsList)
+    {
+        if (account.username == user){
+            client_socket = account.socket;
+            break;
+        }
+    }
+    strncat(ListRes,ListID,BUFF_SIZE);
+    send(client_socket, ListRes, BUFF_SIZE, 0);
+}
+
+void ViewOnlineUser(){
+    
+}
+
+int Invite(){
+    return 0;
+}
+
+int Kick(){
+    return 0;
+}
 
 void *handle_client(void *socket_desc)
 {
@@ -582,6 +646,14 @@ void *handle_client(void *socket_desc)
             case TypeMassage::REPLAY:
                 /* code */
                 break;
+            case TypeMassage::CREATEBOARD:
+                result = CreatePublicBoard(tokens.at(1));
+                sprintf(resultString, "a%d", result);
+                send(client_socket, resultString, BUFF_SIZE, 0);
+                break;
+            case TypeMassage::VIEWBOARDLIST:
+                ViewBoardList(tokens.at(1));
+                break;
             default:
                 send(client_socket, "NonOpt", BUFF_SIZE, 0);
                 break;
@@ -621,7 +693,6 @@ int main()
 {
     ReadFile();
     ReadBoardFile();
-    SetDefaulSignIn();
     int server_fd, new_socket, c;
     struct sockaddr_in server, client;
 
