@@ -520,6 +520,7 @@ void ViewBoardList(std::string user){
     for (auto it : boardList){
         if(it.type==1){
             snprintf(BoardID,BUFF_SIZE,"%d",it.id);
+            strncat(ListID,"+",BUFF_SIZE-1);
             strncat(ListID,BoardID,BUFF_SIZE);
         }
     }
