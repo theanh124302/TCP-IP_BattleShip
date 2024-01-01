@@ -15,8 +15,7 @@ void *receiveThread(void *arg) {
     while (1) {
         // Nhận dữ liệu từ server
         memset(message, 0, sizeof(message));
-        int recv_size = recv(sock, message, sizeof(message), 0);
-        message[recv_size - 1] = '\0';
+        recv(sock, message, sizeof(message), 0);
         printf("Server: %s\n", message);
     }
 }
