@@ -1,6 +1,7 @@
 
  username; password; position; accountId; opponent; status; sign; incorrect; findStatus; boardId
 
+username; password; accountId; status; 
    
 
 
@@ -31,29 +32,39 @@ cot5: so lan nhap sai mat khau lien tiep
 42: Pass cũ sai
 
 
-5.FindMatch : 5+user
+5.FindMatch : 5+accountId
 50: Dang tim tran
-5+user: Da tim duoc tran
+51+opponentId: Da tim duoc tran
 
 findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: da san sang, 4: da vao tran
 
 
-6.ExitFindMatch : 6+user
+6.ExitFindMatch : 6+accountId
 60: Thoat tran thanh cong
 
 
 
 7: ready+user+pos
-70 B chua ready , 7+PosB B da ready
+70 B chua ready , 71 B da ready, vao tran
 
 8: atk+user+index
 80: truot, 81 : trung, 
-82 : thua, 83 : thang 
+90 : thua, 91 : thang 
 
 11: 11+user (Tao ban)
-type res:a
 aBoardID (vi du : a1, a17,a40)
 
 12: 12+user (Xem cac ban duoc nguoi khac tao de join)
-type res:b
 tra ve danh sach id ban (vi du : b+3+5+11+12)
+
+13: 13+user (Xem danh sach nguoi choi onl)
+tra ve danh sach id (vi du : b+3+5+11+12)
+
+14: 14+user+boardId (join ban)
+tra ve id doi thu 
+
+17: 17+user+boardId (start ban -> ready)
+tra ve id doi thu 
+
+
+***** Luu y nghiep vu khi tao ban: p1 tao ban, p2 join ban, p1 bam start => chuyen sang man hinh ready (bam start tuong duong vua match tran xong)
