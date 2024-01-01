@@ -535,8 +535,25 @@ void ViewBoardList(std::string user){
     send(client_socket, ListRes, BUFF_SIZE, 0);
 }
 
-void ViewOnlineUser(){
-    
+void ViewOnlineUser(std::string user){
+    char ListID[BUFF_SIZE]="",UserID[BUFF_SIZE]="",ListRes[BUFF_SIZE]="c";
+    int client_socket;
+    for (auto it : accountsList){
+        if(it.sign==1&&it.username!=user){
+            snprintf(UserID,BUFF_SIZE,"%d",it.accountId);
+            strncat(ListID,"+",BUFF_SIZE-1);
+            strncat(ListID,UserID,BUFF_SIZE);
+        }
+    }
+    for (auto &account : accountsList)
+    {
+        if (account.username == user){
+            client_socket = account.socket;
+            break;
+        }
+    }
+    strncat(ListRes,ListID,BUFF_SIZE);
+    send(client_socket, ListRes, BUFF_SIZE, 0);
 }
 
 int Invite(){
@@ -654,6 +671,9 @@ void *handle_client(void *socket_desc)
                 break;
             case TypeMassage::VIEWBOARDLIST:
                 ViewBoardList(tokens.at(1));
+                break;
+            case TypeMassage::VIEWONLINELIST:
+                ViewOnlineUser(tokens.at(1));
                 break;
             default:
                 send(client_socket, "NonOpt", BUFF_SIZE, 0);
