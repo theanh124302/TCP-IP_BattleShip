@@ -80,5 +80,8 @@ that bai: gui lai cho nguoi bam chap nhan la phong da day "j0"
 17: 17+user+boardId (start ban -> ready)
 tra ve username doi thu (5username)
 
+20: 20+user1+user2+mess
+neu u2 dang onl, nhan duoc h+u1+mess
+neu u2 off, u1 se nhan lai h+0
 
 ***** Luu y nghiep vu khi tao ban: p1 tao ban, p2 join ban, p1 bam start => chuyen sang man hinh ready (bam start tuong duong vua match tran xong)
