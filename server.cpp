@@ -426,7 +426,6 @@ std::string Ready(std::string user, std::string position){
     
     int accId;
     std::string oppPos;
-    char resPos[BUFF_SIZE];
     int oppId;
     int accSocket;
     int oopSoc;
@@ -720,7 +719,33 @@ void Kick(std::string p1Name, std::string p2Name, std::string Board_ID){
 
 
 void Replay(std::string username){
-
+    int soc,win,lose,score;
+    char send_string[BUFF_SIZE]="0+",replay[BUFF_SIZE]="",text[BUFF_SIZE]="";
+    for (auto &account : accountsList)
+    {
+        if (account.username == username){
+            soc = account.socket;
+            strncat(replay,account.history.c_str(),BUFF_SIZE-1);
+            score = account.elo;
+        }
+    }
+    for (size_t i = 0;i<strlen(replay);i++){
+        if(replay[i]=='w'){
+            win++;
+        }else if (replay[i]=='l')
+        {
+            lose++;
+        }
+    }
+    snprintf(text,BUFF_SIZE,"%d",win);
+    strncat(send_string,text,BUFF_SIZE-1);
+    strncat(send_string,"+",BUFF_SIZE-1);
+    snprintf(text,BUFF_SIZE,"%d",lose);
+    strncat(send_string,text,BUFF_SIZE-1);
+    strncat(send_string,"+",BUFF_SIZE-1);
+    snprintf(text,BUFF_SIZE,"%d",score);
+    strncat(send_string,text,BUFF_SIZE-1);
+    send(soc, send_string, BUFF_SIZE, 0);
 }
 
 void ViewRank(std::string username){
@@ -864,7 +889,7 @@ void *handle_client(void *socket_desc)
                 /* code */
                 break;
             case TypeMassage::REPLAY:
-                /* code */
+                Replay(tokens.at(1));
                 break;
             case TypeMassage::CREATEBOARD:
                 result = CreatePublicBoard(tokens.at(1));
