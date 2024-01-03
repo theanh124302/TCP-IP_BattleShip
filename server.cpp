@@ -132,6 +132,7 @@ int SignIn(std::string user, std::string pass, int client_socket)
 }
 
 void updateScore(int userID, int score){
+    char history[BUFF_SIZE];
     for (auto &account : accountsList){
         if(account.accountId == userID){
             if((account.elo + score) <= 0){
@@ -139,6 +140,14 @@ void updateScore(int userID, int score){
             }
             else{
                 account.elo += score;
+            }
+            strncpy(history,account.history.c_str(),BUFF_SIZE);
+            if(score<0){
+                strncat(history,"l",BUFF_SIZE-1);
+                account.history = history;
+            }else{
+                strncat(history,"w",BUFF_SIZE-1);
+                account.history = history;
             }
             break;
         }
@@ -709,6 +718,54 @@ void Kick(std::string p1Name, std::string p2Name, std::string Board_ID){
     send(p1Soc, "f1", BUFF_SIZE, 0);
 }
 
+
+void Replay(std::string username){
+
+}
+
+void ViewRank(std::string username){
+    int soc,count,max=99999,old,same=0;
+    char send_string[BUFF_SIZE]="r", rank[3], score[10];
+    for (auto &account : accountsList)
+    {
+        if (account.username == username){
+            soc = account.socket;
+        }
+    }
+    if(accountsList.size()<5){
+        count = accountsList.size();
+    }else{
+        count = 5;
+    }
+    for (int i = 0;i<count;i++){
+        old = max;
+        max = 0;
+        for (auto &account : accountsList){
+            if (account.elo>max&&account.elo<old){
+                max = account.elo;
+            }
+        }
+        same = 0;
+        for (auto &account : accountsList){
+            if (account.elo==max){
+                strncat(send_string,"+",BUFF_SIZE-1);
+                snprintf(rank,BUFF_SIZE,"%d",i+1);
+                strncat(send_string,rank,BUFF_SIZE-1);
+                strncat(send_string,"+",BUFF_SIZE-1);
+                strncat(send_string,account.username.c_str(),BUFF_SIZE-1);
+                strncat(send_string,"+",BUFF_SIZE-1);
+                snprintf(score,BUFF_SIZE,"%d",account.elo);
+                strncat(send_string,score,BUFF_SIZE-1);
+                same ++;
+            }
+        }
+        i+=same-1;
+    }
+    send(soc, send_string, BUFF_SIZE, 0);
+}
+
+
+
 void *handle_client(void *socket_desc)
 {
     int client_socket = *(int *)socket_desc;
@@ -834,6 +891,9 @@ void *handle_client(void *socket_desc)
             break;
             case TypeMassage::ACCEPT:
                 Accept(tokens.at(1), tokens.at(2));
+            break;
+            case TypeMassage::VIEWTOP:
+                ViewRank(tokens.at(1));
             break;
             default:
                 send(client_socket, "NonOpt", BUFF_SIZE, 0);
