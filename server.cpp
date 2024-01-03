@@ -789,6 +789,28 @@ void ViewRank(std::string username){
     send(soc, send_string, BUFF_SIZE, 0);
 }
 
+void Chat(std::string p1Name, std::string p2Name,std::string mess){
+    int check = 0;
+    char send_string[BUFF_SIZE]="h+";
+    for (auto &account : accountsList)
+    {
+        if (account.username == p2Name&&account.sign ==1){
+            check = 1;
+            strncat(send_string,p1Name.c_str(),BUFF_SIZE-1);
+            strncat(send_string,"+",BUFF_SIZE-1);
+            strncat(send_string,mess.c_str(),BUFF_SIZE-1);
+            send(account.socket, send_string, BUFF_SIZE, 0);
+        }
+    }
+    if(check == 0){
+        for (auto &account : accountsList)
+        {
+            if (account.username == p1Name){
+                send(account.socket, "h+0", BUFF_SIZE, 0);
+            }
+        }
+    }
+}
 
 
 void *handle_client(void *socket_desc)
@@ -919,6 +941,8 @@ void *handle_client(void *socket_desc)
             break;
             case TypeMassage::VIEWTOP:
                 ViewRank(tokens.at(1));
+            case TypeMassage::CHAT:
+                Chat(tokens.at(1), tokens.at(2), tokens.at(3));
             break;
             default:
                 send(client_socket, "NonOpt", BUFF_SIZE, 0);
