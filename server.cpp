@@ -422,9 +422,9 @@ int UpdateBoard(std::string atkPos, int board_ID, int p_ID)
 
 
 
-std::string Ready(std::string user, std::string position){
-    
-    int accId;
+std::string Ready(std::string user, std::string position, std::string skinID){
+    char resPos[BUFF_SIZE],oppSkin[BUFF_SIZE];
+    int accId, opp_skinID;
     std::string oppPos;
     int oppId;
     int accSocket;
@@ -439,6 +439,7 @@ std::string Ready(std::string user, std::string position){
             account.findStatus = 3;
             accSocket = account.socket;
             account.position = position;
+            account.skin = atoi(skinID.c_str());
             break;
         }
     }
@@ -452,8 +453,10 @@ std::string Ready(std::string user, std::string position){
                 account.boardId = new_board_ID;
                 account.findStatus = 4;
                 oppPos = account.position;
-                //sprintf(resPos, "7%s", position.c_str());
-                send(oopSoc, "71", BUFF_SIZE, 0);
+                opp_skinID = account.skin;
+                snprintf(oppSkin,BUFF_SIZE,"%d",opp_skinID);
+                sprintf(resPos, "7%s", skinID.c_str());
+                send(oopSoc, resPos, BUFF_SIZE, 0);
                 check = 1;
                 break;
             };
@@ -469,7 +472,7 @@ std::string Ready(std::string user, std::string position){
             }
         }
         WriteFile();
-        return "1";
+        return oppSkin;
     }
     return "0";
 }
@@ -898,7 +901,7 @@ void *handle_client(void *socket_desc)
                 send(client_socket, resultString, BUFF_SIZE, 0);
                 break;
             case TypeMassage::READY:
-                resultS = Ready(tokens.at(1), tokens.at(2));
+                resultS = Ready(tokens.at(1), tokens.at(2), tokens.at(3));
                 sprintf(resultString, "7%s", resultS.c_str());
                 send(client_socket, resultString, BUFF_SIZE, 0);
                 break;
