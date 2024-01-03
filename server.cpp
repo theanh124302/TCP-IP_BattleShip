@@ -453,8 +453,8 @@ std::string Ready(std::string user, std::string position){
                 account.boardId = new_board_ID;
                 account.findStatus = 4;
                 oppPos = account.position;
-                sprintf(resPos, "7%s", position.c_str());
-                send(oopSoc, resPos, BUFF_SIZE, 0);
+                //sprintf(resPos, "7%s", position.c_str());
+                send(oopSoc, "71", BUFF_SIZE, 0);
                 check = 1;
                 break;
             };
@@ -470,7 +470,7 @@ std::string Ready(std::string user, std::string position){
             }
         }
         WriteFile();
-        return oppPos;
+        return "1";
     }
     return "0";
 }
