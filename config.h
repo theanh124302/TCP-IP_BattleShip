@@ -18,6 +18,7 @@
 #include <cstring>
 #include <fstream>
 
+
 enum TypeMassage
 {
     LOGIN = 1,
@@ -29,7 +30,15 @@ enum TypeMassage
     READY,
     ATTACK,
     GIVEUP,
-    REPLAY
+    REPLAY,
+    CREATEBOARD,
+    VIEWBOARDLIST,
+    VIEWONLINELIST,
+    JOIN,
+    INVITE,
+    KICK,
+    START,
+    ACCEPT,
 };
 
 struct Account
@@ -74,14 +83,16 @@ struct Account
 struct Board
 {
     int id;
+    int type;
     int p1ID;
     int p2ID;
     std::string p1;
     std::string p2;
     int socket1;
     int socket2;
-    Board (int NewID, int p1_ID, int p2_ID, std::string p1pos, std::string p2pos, int socket_1, int socket_2){
+    Board (int NewID, int Board_type, int p1_ID, int p2_ID, std::string p1pos, std::string p2pos, int socket_1, int socket_2){
         id = NewID;
+        type = Board_type;
         p1ID = p1_ID;
         p2ID = p2_ID;
         p1 = p1pos;
