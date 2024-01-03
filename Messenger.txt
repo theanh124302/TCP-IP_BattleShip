@@ -51,6 +51,11 @@ findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: 
 80: truot, 81 : trung, 
 90 : thua, 91 : thang 
 
+
+10: 10+user
+tra ve 0+so tran win+so tran lose+score (0+2+3+150)
+
+
 11: 11+user (Tao ban)
 aBoardID (vi du : a1, a17,a40)
 
@@ -75,7 +80,5 @@ that bai: gui lai cho nguoi bam chap nhan la phong da day "j0"
 17: 17+user+boardId (start ban -> ready)
 tra ve username doi thu (5username)
 
-19: 19+user
-tra ve top 5 nguoi dung dau (r+vitri1+user1+score1+vitri2+user2+score2...)
 
 ***** Luu y nghiep vu khi tao ban: p1 tao ban, p2 join ban, p1 bam start => chuyen sang man hinh ready (bam start tuong duong vua match tran xong)
