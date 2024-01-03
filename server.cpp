@@ -576,7 +576,7 @@ int Join(std::string user, std::string Board_ID){
     for (auto &it : boardList){
         if(it.id==BoardID){
             if(it.type==3){
-                send(client_socket, "d0", BUFF_SIZE, 0);
+                send(client_socket, "d+0", BUFF_SIZE, 0);
                 return 0;
             }
             if(it.type==1){
@@ -604,7 +604,7 @@ int Join(std::string user, std::string Board_ID){
         snprintf(send_string,BUFF_SIZE,"d%s",oppName.c_str());
         send(client_socket, send_string, BUFF_SIZE, 0);
     }else{
-        send(client_socket, "e", BUFF_SIZE, 0);
+        send(client_socket, "d+0", BUFF_SIZE, 0);
     }
     return 0;
 }
@@ -680,14 +680,14 @@ void Accept(std::string username, std::string Board_ID){
                 it.p2ID = id;
                 it.socket2 = soc;
                 send(it.socket1, send_string, BUFF_SIZE, 0);
-                send(soc, "j1", BUFF_SIZE, 0);
+                send(soc, "j+1", BUFF_SIZE, 0);
                 check = 1;
                 break;
             }
         }
     }
     if(check == 0){
-        send(soc, "j0", BUFF_SIZE, 0);
+        send(soc, "j+0", BUFF_SIZE, 0);
     }
 }
 
