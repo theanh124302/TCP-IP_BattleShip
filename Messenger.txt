@@ -44,8 +44,8 @@ findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: 
 
 
 
-7: ready+user+pos
-70 B chua ready , 71 B da ready, vao tran
+7: ready+user+pos+skinID
+70 ben con lai chua ready , 7SkinID : 2 ben da ready (73,75,...)
 
 8: atk+user+index
 80: truot, 81 : trung, 
