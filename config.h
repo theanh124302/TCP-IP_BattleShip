@@ -40,6 +40,7 @@ enum TypeMassage
     START,
     ACCEPT,
     VIEWTOP,
+    CHAT,
 };
 
 struct Account
