@@ -61,7 +61,8 @@ tra ve danh sach id ban (vi du : b+3+5+11+12)
 tra ve danh sach id (vi du : b+3+5+11+12)
 
 14: 14+user+boardId (join ban)
-tra ve id doi thu 
+tra ve ussername doi thu (d+username)
+neu that bai tra ve (d+0)
 
 15: 15+p1Name+p2Name+boardId
 gui cho doi thu loi moi i+username(nguoi gui)+boardId
@@ -72,7 +73,7 @@ that bai: gui lai cho nguoi bam chap nhan la phong da day "j0"
 
 
 17: 17+user+boardId (start ban -> ready)
-tra ve id doi thu 
+tra ve username doi thu (5username)
 
 
 ***** Luu y nghiep vu khi tao ban: p1 tao ban, p2 join ban, p1 bam start => chuyen sang man hinh ready (bam start tuong duong vua match tran xong)
