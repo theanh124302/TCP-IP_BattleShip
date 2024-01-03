@@ -63,6 +63,14 @@ tra ve danh sach id (vi du : b+3+5+11+12)
 14: 14+user+boardId (join ban)
 tra ve id doi thu 
 
+15: 15+p1Name+p2Name+boardId
+gui cho doi thu loi moi i+username(nguoi gui)+boardId
+
+18: 18+username+boardId (chap nhan loi moi)
+thanhcong : gui cho nguoi gui loi moi user nguoi chap nhan (j+user), gui cho nguoi chap nhan la chap nhan thanh cong "j1" (chuyen sang man hinh "sanh/ban")
+that bai: gui lai cho nguoi bam chap nhan la phong da day "j0"
+
+
 17: 17+user+boardId (start ban -> ready)
 tra ve id doi thu 
 
