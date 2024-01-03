@@ -112,6 +112,7 @@ int SignIn(std::string user, std::string pass, int client_socket)
                     account.incorrect = 0;
                     account.sign = 1;
                     account.opponent = -1;
+                    account.findStatus = 0;
                     account.socket = client_socket;
                     WriteFile();
                     // Login thanh cong
@@ -189,6 +190,7 @@ int SignOut(std::string user)
             account.sign = 0;
             account.socket = 0;
             account.opponent = -1;
+            account.findStatus = 0;
             WriteFile();
             break;
         }
@@ -327,9 +329,7 @@ int CreateBoard(int p1ID, int p2ID, std::string p1, std::string p2, int socket1,
 }
 
 
-// int DeleteTable(int board_ID){
 
-// }
 
 
 int UpdateBoard(std::string atkPos, int board_ID, int p_ID)
@@ -408,6 +408,9 @@ int UpdateBoard(std::string atkPos, int board_ID, int p_ID)
     }
     return 0;
 }
+
+
+
 
 
 std::string Ready(std::string user, std::string position){
@@ -508,14 +511,14 @@ int CreatePublicBoard(std::string user){
         }
 
     }
-    Board board = Board(newID,1, p1ID, 0, "x", "x", socket1, -1);
+    Board board = Board(newID,1, p1ID, -1, "x", "x", socket1, -1);
     boardList.push_back(board);
     WriteBoardFile();
     return newID;
 }
 
 void ViewBoardList(std::string user){
-    char ListID[BUFF_SIZE],BoardID[BUFF_SIZE],ListRes[BUFF_SIZE]="b";
+    char ListID[BUFF_SIZE]="",BoardID[BUFF_SIZE]="",ListRes[BUFF_SIZE]="b";
     int client_socket;
     for (auto it : boardList){
         if(it.type==1){
@@ -536,13 +539,13 @@ void ViewBoardList(std::string user){
 }
 
 void ViewOnlineUser(std::string user){
-    char ListID[BUFF_SIZE]="",UserID[BUFF_SIZE]="",ListRes[BUFF_SIZE]="c";
+    char ListID[BUFF_SIZE]="",UserOnl[BUFF_SIZE]="",ListRes[BUFF_SIZE]="c";
     int client_socket;
     for (auto it : accountsList){
         if(it.sign==1&&it.username!=user){
-            snprintf(UserID,BUFF_SIZE,"%d",it.accountId);
+            snprintf(UserOnl,BUFF_SIZE,"%s",it.username.c_str());
             strncat(ListID,"+",BUFF_SIZE-1);
-            strncat(ListID,UserID,BUFF_SIZE);
+            strncat(ListID,UserOnl,BUFF_SIZE);
         }
     }
     for (auto &account : accountsList)
@@ -556,12 +559,154 @@ void ViewOnlineUser(std::string user){
     send(client_socket, ListRes, BUFF_SIZE, 0);
 }
 
-int Invite(){
+
+int Join(std::string user, std::string Board_ID){
+    int BoardID = std::stoi(Board_ID);
+    int client_socket,accID,check=0,oPPSocket,oppID;
+    std::string oppName;
+    char send_string[BUFF_SIZE];
+    for (auto &account : accountsList)
+    {
+        if (account.username == user){
+            accID = account.accountId;
+            client_socket = account.socket;
+            break;
+        }
+    }
+    for (auto &it : boardList){
+        if(it.id==BoardID){
+            if(it.type==3){
+                send(client_socket, "d0", BUFF_SIZE, 0);
+                return 0;
+            }
+            if(it.type==1){
+                oPPSocket = it.socket1;
+                oppID = it.p1ID;
+                it.type=3;
+                it.p2ID=accID;
+                it.socket2=client_socket;
+                check = 1;
+                break;
+            }
+        }
+    }
+    for (auto &account : accountsList)
+    {
+        if (account.accountId == oppID){
+            oppName = account.username;
+            break;
+        }
+    }
+    if(check==1){
+        WriteBoardFile();
+        snprintf(send_string,BUFF_SIZE,"d%s",user.c_str());
+        send(oPPSocket, send_string, BUFF_SIZE, 0);
+        snprintf(send_string,BUFF_SIZE,"d%s",oppName.c_str());
+        send(client_socket, send_string, BUFF_SIZE, 0);
+    }else{
+        send(client_socket, "e", BUFF_SIZE, 0);
+    }
     return 0;
 }
 
-int Kick(){
-    return 0;
+
+void Start(std::string user, std::string Board_ID){
+    int BoardID = std::stoi(Board_ID);
+    std::string p1Name,p2Name;
+    char send_string[BUFF_SIZE];
+    int p1ID,p2ID,p1Soc,p2Soc;
+    for (auto &it : boardList){
+        if(it.id==BoardID){
+            
+            p1ID = it.p1ID;
+            p2ID = it.p2ID;
+            p1Soc = it.socket1;
+            p2Soc = it.socket2;
+        }
+    }
+    for (auto &account : accountsList)
+    {
+        if (account.accountId == p1ID){
+            p1Name = account.username;
+            account.opponent = p2ID;
+            account.findStatus = 2;
+        }
+        if (account.accountId == p2ID){
+            p2Name = account.username;
+            account.opponent = p1ID;
+            account.findStatus = 2;
+        }
+    }
+    snprintf(send_string,BUFF_SIZE,"5%s",p1Name.c_str());
+    send(p2Soc, send_string, BUFF_SIZE, 0);
+    //send_string = " "; 
+    snprintf(send_string,BUFF_SIZE,"5%s",p2Name.c_str());
+    send(p1Soc, send_string, BUFF_SIZE, 0);
+}
+
+
+
+void Invite(std::string p1Name, std::string p2Name, std::string Board_ID){
+    int BoardID = std::stoi(Board_ID);
+    char send_string[BUFF_SIZE];
+    snprintf(send_string,BUFF_SIZE,"i+%s+%d",p1Name.c_str(),BoardID);
+    for (auto &account : accountsList)
+    {
+        if (account.username == p2Name){
+            if(account.findStatus == 0){
+                send(account.socket, send_string, BUFF_SIZE, 0);
+                break;
+            }
+        }
+    }
+}
+
+void Accept(std::string username, std::string Board_ID){
+    int BoardID = std::stoi(Board_ID);
+    int id,soc,check = 0;
+    char send_string[BUFF_SIZE];
+    snprintf(send_string,BUFF_SIZE,"j+%s",username.c_str());
+    for (auto &account : accountsList)
+    {
+        if (account.username == username){
+            id = account.accountId;
+            soc = account.socket;
+        }
+    }
+    for (auto &it : boardList){
+        if(it.id==BoardID){
+            if(it.type == 1){
+                it.type = 3;
+                it.p2ID = id;
+                it.socket2 = soc;
+                send(it.socket1, send_string, BUFF_SIZE, 0);
+                send(soc, "j1", BUFF_SIZE, 0);
+                check = 1;
+                break;
+            }
+        }
+    }
+    if(check == 0){
+        send(soc, "j0", BUFF_SIZE, 0);
+    }
+}
+
+
+
+void Kick(std::string p1Name, std::string p2Name, std::string Board_ID){
+    int BoardID = std::stoi(Board_ID);
+    int p1Soc,p2Soc;
+    for (auto &it : boardList){
+        if(it.id==BoardID){
+            it.p2ID = -1;
+            it.socket2 = -1;
+            it.type = 1;
+            p1Soc = it.socket1;
+            p2Soc = it.socket2;
+        }
+    }
+    send(p2Soc, "f0", BUFF_SIZE, 0);
+    send(p1Soc, "f1", BUFF_SIZE, 0);
 }
 
 void *handle_client(void *socket_desc)
@@ -675,6 +820,21 @@ void *handle_client(void *socket_desc)
             case TypeMassage::VIEWONLINELIST:
                 ViewOnlineUser(tokens.at(1));
                 break;
+            case TypeMassage::JOIN:
+                Join(tokens.at(1), tokens.at(2));
+                break;
+            case TypeMassage::INVITE:
+                Invite(tokens.at(1), tokens.at(2), tokens.at(3));
+            break;
+            case TypeMassage::START:
+                Start(tokens.at(1), tokens.at(2));
+            break;
+            case TypeMassage::KICK:
+                Kick(tokens.at(1), tokens.at(2), tokens.at(3));
+            break;
+            case TypeMassage::ACCEPT:
+                Accept(tokens.at(1), tokens.at(2));
+            break;
             default:
                 send(client_socket, "NonOpt", BUFF_SIZE, 0);
                 break;
