@@ -39,6 +39,7 @@ enum TypeMassage
     KICK,
     START,
     ACCEPT,
+    VIEWTOP,
 };
 
 struct Account
