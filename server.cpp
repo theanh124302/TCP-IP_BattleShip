@@ -412,7 +412,7 @@ int UpdateBoard(std::string atkPos, int board_ID, int p_ID)
         return 1;
     }else if (check == 0)
     {
-        send(oopSoc, "a0", BUFF_SIZE, 0);
+        send(oopSoc, "80", BUFF_SIZE, 0);
         return 0;
     }
     return 0;
