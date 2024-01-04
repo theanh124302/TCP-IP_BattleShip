@@ -973,23 +973,25 @@ void *handle_client(void *socket_desc)
                 break;
             case TypeMassage::INVITE:
                 Invite(tokens.at(1), tokens.at(2), tokens.at(3));
-            break;
+                break;
             case TypeMassage::START:
                 Start(tokens.at(1), tokens.at(2));
-            break;
+                break;
             case TypeMassage::KICK:
                 Kick(tokens.at(1), tokens.at(2), tokens.at(3));
-            break;
+                break;
             case TypeMassage::ACCEPT:
                 Accept(tokens.at(1), tokens.at(2));
-            break;
+                break;
             case TypeMassage::VIEWTOP:
                 ViewRank(tokens.at(1));
+                break;
             case TypeMassage::CHAT:
                 Chat(tokens.at(1), tokens.at(2), tokens.at(3));
+                break;
             case TypeMassage::LEAVE:
                 Leave(tokens.at(1), tokens.at(2));
-            break;
+                break;
             default:
                 send(client_socket, "NonOpt", BUFF_SIZE, 0);
                 break;
