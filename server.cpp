@@ -135,6 +135,7 @@ void updateScore(int userID, int score){
     char history[BUFF_SIZE];
     for (auto &account : accountsList){
         if(account.accountId == userID){
+            account.findStatus = 5;
             if((account.elo + score) <= 0){
                 account.elo = 0;
             }
@@ -157,9 +158,7 @@ void updateScore(int userID, int score){
 }
 
 int ExitMatch(std::string user){
-    int accId;
-    int oppId;
-    int oppSoc;
+    int accId,oppId,oppSoc,findStatus=0;
     for (auto &account : accountsList)
     {
         if (account.username == user){
@@ -177,13 +176,19 @@ int ExitMatch(std::string user){
             {
                 oppSoc = account.socket;
                 account.opponent = -1;
+                findStatus = account.findStatus;
                 account.findStatus = 0;
                 break;
             }
         }
-        updateScore(oppId,50);
-        updateScore(accId,-30);
-        send(oppSoc, "83", BUFF_SIZE, 0);
+        if(findStatus!=5){
+            updateScore(oppId,50);
+            updateScore(accId,-30);
+            send(oppSoc, "83", BUFF_SIZE, 0);
+        }else{
+            send(oppSoc, "84", BUFF_SIZE, 0);
+        }
+
     }
     WriteFile();
     return 0;
@@ -670,6 +675,7 @@ void Invite(std::string p1Name, std::string p2Name, std::string Board_ID){
             }
         }
     }
+    WriteBoardFile();
 }
 
 void Accept(std::string username, std::string Board_ID){
@@ -700,6 +706,7 @@ void Accept(std::string username, std::string Board_ID){
     if(check == 0){
         send(soc, "j+0", BUFF_SIZE, 0);
     }
+    WriteBoardFile();
 }
 
 
@@ -718,11 +725,12 @@ void Kick(std::string p1Name, std::string p2Name, std::string Board_ID){
     }
     send(p2Soc, "f0", BUFF_SIZE, 0);
     send(p1Soc, "f1", BUFF_SIZE, 0);
+    WriteBoardFile();
 }
 
 void Leave(std::string userName, std::string Board_ID){
     int BoardID = std::stoi(Board_ID);
-    int p1Soc,id;
+    int id;
     for (auto &account : accountsList)
     {
         if (account.username == userName){
@@ -733,20 +741,19 @@ void Leave(std::string userName, std::string Board_ID){
     }
     for (auto &it : boardList){
         if(it.id==BoardID){
-            p1Soc = it.socket1;
             it.type = 1;
             if(id == it.p2ID){
                 it.p2ID = -1;
                 it.socket2 = -1;
-                send(p1Soc, "f1", BUFF_SIZE, 0);
+                send(it.socket1, "f1", BUFF_SIZE, 0);
             }
             if(id == it.p1ID){
                 it.p1ID = it.p2ID;
                 it.p2ID = -1;
                 it.socket1 = it.socket2;
                 it.socket2 = -1;
-                if(p1Soc!=-1){
-                    send(p1Soc, "f2", BUFF_SIZE, 0);
+                if(it.socket1!=-1){
+                    send(it.socket1, "f2", BUFF_SIZE, 0);
                 }
             }
         }
