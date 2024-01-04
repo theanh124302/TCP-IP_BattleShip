@@ -41,6 +41,7 @@ enum TypeMassage
     ACCEPT,
     VIEWTOP,
     CHAT,
+    LEAVE,
 };
 
 struct Account
