@@ -75,10 +75,10 @@ tra ve danh sach id (vi du : b+3+5+11+12)
 tra ve ussername doi thu (d+username)
 neu that bai tra ve (d+0)
 
-15: 15+p1Name+p2Name+boardId
+15: 15+p1Name+p2Name+boardId (invite)
 gui cho doi thu loi moi i+username(nguoi gui)+boardId
 
-16: 16+p1Name+p2Name+boardId
+16: 16+p1Name+p2Name+boardId (kick)
 gui ve "f1" cho p1, "f0" cho p2
 
 18: 18+username+boardId (chap nhan loi moi)
@@ -95,11 +95,11 @@ vi du : r+1+a+370+2+b+320+3+c+0
 a xep top 1 voi 370 diem, b top 2 320 diem, c top 3 0 diem
 
 
-20: 20+user1+user2+mess
+20: 20+user1+user2+mess (chat)
 neu u2 dang onl, nhan duoc h+u1+mess
 neu u2 off, u1 se nhan lai h+0
 
-21: 21+user+boardId
+21: 21+user+boardId (leave)
 neu la p2, gui la "f1" cho p1,
 neu la p1, gui la "f2" cho p2, doi cho p2 thanh p1 tren giao dien
 
