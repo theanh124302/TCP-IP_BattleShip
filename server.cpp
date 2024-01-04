@@ -184,7 +184,7 @@ int ExitMatch(std::string user){
         if(findStatus!=5){
             updateScore(oppId,50);
             updateScore(accId,-30);
-            send(oppSoc, "83", BUFF_SIZE, 0);
+            send(oppSoc, "85", BUFF_SIZE, 0);
         }else{
             send(oppSoc, "84", BUFF_SIZE, 0);
         }
