@@ -50,7 +50,12 @@ neu thoat tran sau khi ket thuc game dau thi gui cho doi thu "84"
 70 ben con lai chua ready , 7SkinID : 2 ben da ready (73,75,...)
 
 8: atk+user+index
-80: truot, 81 : trung, 82: thua, 83: thang
+vi du : 8+a+32
+trung manh cuoi cung (end): p1 : 83 (thang), p2 : 82 (thua)
+trung nhung khong phai manh cuoi : p1 : 81, p2 : 832
+truot : p1 : 80, p2: 832
+truong hop khac : 84: doi thu out trong man replay
+85: doi thu out khi dang ready, trong tran (-> win, quay tro lai man hinh chinh)
 
 
 10: 10+user
