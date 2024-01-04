@@ -41,6 +41,8 @@ findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: 
 
 6.ExitFindMatch : 6+accountId
 60: Thoat tran thanh cong
+gui lai cho doi thu "83" (thong bao thang) neu dang trong tran hoac dang trong ready
+neu thoat tran sau khi ket thuc game dau thi gui cho doi thu "84"
 
 
 
@@ -48,8 +50,7 @@ findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: 
 70 ben con lai chua ready , 7SkinID : 2 ben da ready (73,75,...)
 
 8: atk+user+index
-80: truot, 81 : trung, 
-90 : thua, 91 : thang 
+80: truot, 81 : trung, 82: thua, 83: thang
 
 
 10: 10+user
