@@ -89,6 +89,12 @@ that bai: gui lai cho nguoi bam chap nhan la phong da day "j0"
 17: 17+user+boardId (start ban -> ready)
 tra ve username doi thu (5username)
 
+19: 19+user (xem top 5 nguoi co diem cao nhat)
+tra ve 5 nguoi choi co thu hang cao nhat: 
+vi du : r+1+a+370+2+b+320+3+c+0
+a xep top 1 voi 370 diem, b top 2 320 diem, c top 3 0 diem
+
+
 20: 20+user1+user2+mess
 neu u2 dang onl, nhan duoc h+u1+mess
 neu u2 off, u1 se nhan lai h+0
