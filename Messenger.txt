@@ -41,7 +41,7 @@ findStatus (cot 6): 0: chua tim tran, 1: dang tim tran, 2: da tim thay tran, 3: 
 
 6.ExitFindMatch : 6+accountId
 60: Thoat tran thanh cong
-gui lai cho doi thu "83" (thong bao thang) neu dang trong tran hoac dang trong ready
+gui lai cho doi thu "85" (thong bao thang do doi thu thoat tran) neu dang trong tran hoac dang trong ready
 neu thoat tran sau khi ket thuc game dau thi gui cho doi thu "84"
 
 
