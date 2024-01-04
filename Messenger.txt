@@ -72,6 +72,9 @@ neu that bai tra ve (d+0)
 15: 15+p1Name+p2Name+boardId
 gui cho doi thu loi moi i+username(nguoi gui)+boardId
 
+16: 16+p1Name+p2Name+boardId
+gui ve "f1" cho p1, "f0" cho p2
+
 18: 18+username+boardId (chap nhan loi moi)
 thanhcong : gui cho nguoi gui loi moi user nguoi chap nhan (j+user), gui cho nguoi chap nhan la chap nhan thanh cong "j1" (chuyen sang man hinh "sanh/ban")
 that bai: gui lai cho nguoi bam chap nhan la phong da day "j0"
@@ -83,5 +86,9 @@ tra ve username doi thu (5username)
 20: 20+user1+user2+mess
 neu u2 dang onl, nhan duoc h+u1+mess
 neu u2 off, u1 se nhan lai h+0
+
+21: 21+user+boardId
+neu la p2, gui la "f1" cho p1,
+neu la p1, gui la "f2" cho p2, doi cho p2 thanh p1 tren giao dien
 
 ***** Luu y nghiep vu khi tao ban: p1 tao ban, p2 join ban, p1 bam start => chuyen sang man hinh ready (bam start tuong duong vua match tran xong)
