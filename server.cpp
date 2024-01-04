@@ -428,7 +428,7 @@ int UpdateBoard(std::string atkPos, int board_ID, int p_ID)
 
 
 std::string Ready(std::string user, std::string position, std::string skinID){
-    char resPos[BUFF_SIZE],oppSkin[BUFF_SIZE];
+    char oppSkin[BUFF_SIZE];
     int accId, opp_skinID;
     std::string oppPos;
     int oppId;
@@ -460,8 +460,7 @@ std::string Ready(std::string user, std::string position, std::string skinID){
                 oppPos = account.position;
                 opp_skinID = account.skin;
                 snprintf(oppSkin,BUFF_SIZE,"%d",opp_skinID);
-                sprintf(resPos, "7%s", skinID.c_str());
-                send(oopSoc, resPos, BUFF_SIZE, 0);
+                send(oopSoc, "71", BUFF_SIZE, 0);
                 check = 1;
                 break;
             };
@@ -477,7 +476,7 @@ std::string Ready(std::string user, std::string position, std::string skinID){
             }
         }
         WriteFile();
-        return oppSkin;
+        return "1";
     }
     return "0";
 }
@@ -1028,6 +1027,7 @@ int main()
 {
     ReadFile();
     ReadBoardFile();
+    SetDefaulSignIn();
     int server_fd, new_socket, c;
     struct sockaddr_in server, client;
 
@@ -1090,6 +1090,7 @@ int main()
     }
 
     SetDefaulSignIn();
+    WriteFile();
 
     if (new_socket < 0)
     {
