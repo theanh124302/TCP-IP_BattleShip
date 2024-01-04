@@ -709,15 +709,48 @@ void Kick(std::string p1Name, std::string p2Name, std::string Board_ID){
     int p1Soc,p2Soc;
     for (auto &it : boardList){
         if(it.id==BoardID){
+            p1Soc = it.socket1;
+            p2Soc = it.socket2;
             it.p2ID = -1;
             it.socket2 = -1;
             it.type = 1;
-            p1Soc = it.socket1;
-            p2Soc = it.socket2;
         }
     }
     send(p2Soc, "f0", BUFF_SIZE, 0);
     send(p1Soc, "f1", BUFF_SIZE, 0);
+}
+
+void Leave(std::string userName, std::string Board_ID){
+    int BoardID = std::stoi(Board_ID);
+    int p1Soc,id;
+    for (auto &account : accountsList)
+    {
+        if (account.username == userName){
+            id = account.accountId;
+            account.opponent = -1;
+            account.findStatus = 0;
+        }
+    }
+    for (auto &it : boardList){
+        if(it.id==BoardID){
+            p1Soc = it.socket1;
+            it.type = 1;
+            if(id == it.p2ID){
+                it.p2ID = -1;
+                it.socket2 = -1;
+                send(p1Soc, "f1", BUFF_SIZE, 0);
+            }
+            if(id == it.p1ID){
+                it.p1ID = it.p2ID;
+                it.p2ID = -1;
+                it.socket1 = it.socket2;
+                it.socket2 = -1;
+                if(p1Soc!=-1){
+                    send(p1Soc, "f2", BUFF_SIZE, 0);
+                }
+            }
+        }
+    }
 }
 
 
@@ -946,6 +979,8 @@ void *handle_client(void *socket_desc)
                 ViewRank(tokens.at(1));
             case TypeMassage::CHAT:
                 Chat(tokens.at(1), tokens.at(2), tokens.at(3));
+            case TypeMassage::LEAVE:
+                Leave(tokens.at(1), tokens.at(2));
             break;
             default:
                 send(client_socket, "NonOpt", BUFF_SIZE, 0);
